@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 env:
-  APP_ID:
-  MANIFEST_PATH:
-  FLATPAK_BUNDLE:
-  FLATPAK_BRANCH:
-  DESTINATION_GITHUB_USERNAME:
-  DESTINATION_REPOSITORY_NAME:
+  APP_ID: com.github.jpochyla.Psst
+  MANIFEST_PATH: com.github.jpochyla.Psst.yaml
+  FLATPAK_BUNDLE: psst
+  FLATPAK_BRANCH: nightly
+  DESTINATION_GITHUB_USERNAME: test-org69420
+  DESTINATION_REPOSITORY_NAME: test-org69420.github.io
   FLATPAK_BUILD_DIR: build-dir
   FLATPAK_BUILD_REPO: build-repo
 
@@ -145,10 +145,10 @@ jobs:
         REGISTRY_AUTH_FILE: /tmp/auth.json
       run: |
         export IMAGE_REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')
-        export DOCKER="$(skopeo inspect docker://ghcr.io/${IMAGE_REPOSITORY}:$FLATPAK_BRANCH | jq --arg image_repository "${IMAGE_REPOSITORY}" '. as $img | { "Name": "'$image_repository'", "Images": [$img] }')"
+        export DOCKER="$(skopeo inspect docker://ghcr.io/$IMAGE_REPOSITORY:$FLATPAK_BRANCH | jq --arg github_repository "$GITHUB_REPOSITORY" '. as $img | { "Name": $github_repository, "Images": [$img] }')"
         set -e
-        git clone gh-pages https://github.com/$GITHUB_REPOSITORY gh-pages
-        cat gh-pages/index/static | jq --argjson docker "$DOCKER" '.Results += [ $docker ]' > gh-pages/index/static
+        git clone -b gh-pages https://github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git gh-pages
+        curl -s https://raw.githubusercontent.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME/gh-pages/index/static | jq --argjson docker "$DOCKER" '.Results += [ $docker ]' > gh-pages/index/static
 
     - name: Push to repository
       uses: cpina/github-action-push-to-another-repository@main

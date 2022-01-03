@@ -159,6 +159,6 @@ jobs:
         destination-github-username: ${{ env.DESTINATION_GITHUB_USERNAME }}
         destination-repository-name: ${{ env.DESTINATION_REPOSITORY_NAME }}
         user-email: github-actions[bot]@users.noreply.github.com
-        commit-message: Update index for ${{ env.GITHUB_SHA:0:7 }}
+        commit-message: Update index for ${{ env.GITHUB_SHA }}
         target-branch: gh-pages
 
